@@ -1,0 +1,22 @@
+# 忽略所有 `.log` 文件
+*.log
+
+# 忽略临时文件
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+
+# Go 编译生成文件
+*.exe
+*.dll
+*.so
+*.out
+
+# 忽略二进制文件和缓存
+bin/
+build/
+*.o
+*.a
+*.class
