@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package article;
+option go_package="./article";
+
+// 文章服务接口定义
+service Article {
+    // 创建文章
+    rpc CreateArticle(CreateArticleRequest) returns (CreateArticleResponse);
+    // 获取文章列表
+    rpc GetArticleList(GetArticleListRequest) returns (GetArticleListResponse);
+    // 获取文章详情
+    rpc GetArticle(GetArticleRequest) returns (GetArticleResponse);
+    // 更新文章
+    rpc UpdateArticle(UpdateArticleRequest) returns (UpdateArticleResponse);
+    // 删除文章
+    rpc DeleteArticle(DeleteArticleRequest) returns (DeleteArticleResponse);
+}
+
+// 文章信息
+message ArticleInfo {
+    int64 id = 1;
+    int64 user_id = 2;
+    string title = 3;
+    string content = 4;
+    int64 view_count = 5;
+    string created_at = 6;
+    string updated_at = 7;
+}
+
+// 创建文章请求
+message CreateArticleRequest {
+    int64 user_id = 1;
+    string title = 2;
+    string content = 3;
+}
+
+// 创建文章响应
+message CreateArticleResponse {
+    int64 id = 1;
+}
+
+// 获取文章列表请求
+message GetArticleListRequest {
+    int64 user_id = 1;
+    int64 page = 2;      // 页码
+    int64 page_size = 3; // 每页数量
+}
+
+// 获取文章列表响应
+message GetArticleListResponse {
+    repeated ArticleInfo list = 1;
+    int64 total = 2;         // 总数
+}
+
+// 获取文章详情请求
+message GetArticleRequest {
+    int64 id = 1;
+}
+
+// 获取文章详情响应
+message GetArticleResponse {
+    ArticleInfo article = 1;
+}
+
+// 更新文章请求
+message UpdateArticleRequest {
+    int64 id = 1;
+    string title = 2;
+    string content = 3;
+    int64 user_id = 4;    // 用于验证文章所有权
+}
+
+// 更新文章响应
+message UpdateArticleResponse {
+}
+
+// 删除文章请求
+message DeleteArticleRequest {
+    int64 id = 1;
+    int64 user_id = 2;    // 用于验证文章所有权
+}
+
+// 删除文章响应
+message DeleteArticleResponse {
+}

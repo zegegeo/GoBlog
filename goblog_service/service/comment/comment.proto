@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package comment;
+option go_package="./comment";
+
+service Comment {
+    // 创建评论
+    rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse);
+    // 获取文章评论列表
+    rpc GetCommentList(GetCommentListRequest) returns (GetCommentListResponse);
+    // 删除评论
+    rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse);
+}
+
+// 评论信息
+message CommentInfo {
+    int64 id = 1;
+    int64 article_id = 2;
+    int64 user_id = 3;
+    string username = 4;    // 评论者用户名
+    string content = 5;
+    string created_at = 6;
+}
+
+// 创建评论请求
+message CreateCommentRequest {
+    int64 article_id = 1;
+    int64 user_id = 2;
+    string content = 3;
+}
+
+// 创建评论响应
+message CreateCommentResponse {
+    int64 id = 1;
+}
+
+// 获取评论列表请求
+message GetCommentListRequest {
+    int64 article_id = 1;
+    int64 page = 2;
+    int64 page_size = 3;
+}
+
+// 获取评论列表响应
+message GetCommentListResponse {
+    repeated CommentInfo list = 1;
+    int64 total = 2;
+}
+
+// 删除评论请求
+message DeleteCommentRequest {
+    int64 id = 1;
+    int64 user_id = 2;    // 用于验证评论所有权
+}
+
+// 删除评论响应
+message DeleteCommentResponse {}

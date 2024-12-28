@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  etcd:
+    image: bitnami/etcd:latest
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+    ports:
+      - "2379:2379"
+
+  user-rpc:
+    build:
+      context: .
+      dockerfile: service/user/Dockerfile
+    depends_on:
+      - etcd
+      - mysql
+      - redis
+
+  article-rpc:
+    build:
+      context: .
+      dockerfile: service/article/Dockerfile
+    depends_on:
+      - etcd
+      - mysql
+      - redis
+
+  comment-rpc:
+    build:
+      context: .
+      dockerfile: service/comment/Dockerfile
+    depends_on:
+      - etcd
+      - mysql
+      - redis
+
+  gateway:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "8888:8888"
+    depends_on:
+      - user-rpc
+      - article-rpc
+      - comment-rpc
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: lwz2001110
+      MYSQL_DATABASE: GoBlog
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql_data: 

@@ -1,0 +1,16 @@
+Name: article.rpc
+ListenOn: 0.0.0.0:8081
+
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: article.rpc
+
+Mysql:
+  DataSource: root:lwz2001110@tcp(localhost:3306)/GoBlog?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+
+RedisConf:
+  Host: localhost:6379
+  Type: node
+  Pass: ""
+  Key: "article:"

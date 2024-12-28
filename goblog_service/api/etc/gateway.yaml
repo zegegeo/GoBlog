@@ -1,0 +1,54 @@
+Name: gateway
+Host: 0.0.0.0
+Port: 8888
+MaxBytes: 1048576
+Timeout: 3000
+
+Auth:
+  AccessSecret: secret123456  # 修改为你的密钥
+  AccessExpire: 7200            # token过期时间(秒)
+
+Redis:
+  Host: localhost:6379
+  Type: node
+  Pass: ""
+  Key: "gateway:"
+
+# User RPC 服务配置
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
+  
+# 后续可能需要添加的其他服务配置
+ArticleRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: article.rpc
+
+CommentRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: comment.rpc
+
+Middleware:
+  AuthMiddleware: true    # 开启认证中间件
+  Auth: true
+  Cors: true
+
+# 路由分组
+Route:
+  - path: /api/v1/user/*
+    auth: false
+  - path: /api/v1/articles
+    auth: true
+  - path: /api/v1/articles/*
+    auth: true
+
+Log:
+  ServiceName: gateway
+  Mode: console          # 输出模式，console或file
+  Level: info           # 日志级别

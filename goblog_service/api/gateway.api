@@ -1,0 +1,148 @@
+syntax = "v1"
+
+info (
+	title:   "博客系统API网关"
+	desc:    "博客系统API网关，处理用户、文章、评论相关接口"
+	author:  "author"
+	version: "v1"
+)
+
+// 用户相关类型定义
+type (
+	RegisterReq {
+		Username string `json:"username" validate:"required,min=4,max=32"`
+		Password string `json:"password" validate:"required,min=6,max=32"`
+	}
+	LoginReq {
+		Username string `json:"username" validate:"required"`
+		Password string `json:"password" validate:"required"`
+	}
+	LoginReply {
+		Token string `json:"token"`
+		User  User   `json:"user"`
+	}
+	User {
+		Id        int64  `json:"id"`
+		Username  string `json:"username"`
+		CreatedAt string `json:"created_at"`
+	}
+)
+
+// 文章相关类型定义
+type (
+	Article {
+		Id        int64  `json:"id"`
+		Title     string `json:"title"`
+		Content   string `json:"content"`
+		UserId    int64  `json:"user_id"`
+		ViewCount int64  `json:"view_count"`
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
+		Author    User   `json:"author"`
+	}
+	CreateArticleReq {
+		Title   string `json:"title" validate:"required,min=1,max=255"`
+		Content string `json:"content" validate:"required"`
+	}
+	ArticleListReq {
+		Page     int64 `form:"page,default=1"`
+		PageSize int64 `form:"page_size,default=10"`
+	}
+	ArticleListResp {
+		Total    int64     `json:"total"`
+		Articles []Article `json:"articles"`
+	}
+	ArticleReq {
+		Id int64 `path:"id"`
+	}
+	ArticleResp {
+		Article Article `json:"article"`
+	}
+	UpdateArticleReq {
+		Id      int64  `path:"id"`
+		Title   string `json:"title"`
+		Content string `json:"content"`
+	}
+	DeleteArticleReq {
+		Id int64 `path:"id"`
+	}
+	CreateArticleResp {
+		Id int64 `json:"id"`
+	}
+)
+
+// 评论相关类型定义
+type (
+	Comment {
+		Id        int64  `json:"id"`
+		ArticleId int64  `json:"article_id"`
+		UserId    int64  `json:"user_id"`
+		Content   string `json:"content"`
+		CreatedAt string `json:"created_at"`
+		Author    User   `json:"author"`
+	}
+	CreateCommentReq {
+		ArticleId int64  `path:"article_id"`
+		Content   string `json:"content" validate:"required"`
+	}
+	CommentListReq {
+		ArticleId int64 `path:"article_id"`
+		Page      int64 `form:"page,default=1"`
+		PageSize  int64 `form:"page_size,default=10"`
+	}
+	CommentListResp {
+		Total    int64     `json:"total"`
+		Comments []Comment `json:"comments"`
+	}
+	DeleteCommentReq {
+		Id int64 `path:"id"`
+	}
+)
+
+// 不需要登录的服务
+@server (
+	prefix:     /api/v1
+	middleware: CorsMiddleware
+)
+service gateway {
+	// 用户服务
+	@handler login
+	post /user/login (LoginReq) returns (LoginReply)
+
+	@handler register
+	post /user/register (RegisterReq)
+}
+
+// 需要登录的服务
+@server (
+	prefix:     /api/v1
+	middleware: AuthMiddleware,CorsMiddleware
+)
+service gateway {
+	// 文章服务
+	@handler createArticle
+	post /articles (CreateArticleReq)
+
+	@handler getArticleList
+	get /articles (ArticleListReq) returns (ArticleListResp)
+
+	@handler getArticle
+	get /articles/:id (ArticleReq) returns (ArticleResp)
+
+	@handler updateArticle
+	put /articles/:id (UpdateArticleReq)
+
+	@handler deleteArticle
+	delete /articles/:id (DeleteArticleReq)
+
+	// 评论服务
+	@handler createComment
+	post /articles/:article_id/comments (CreateCommentReq)
+
+	@handler getCommentList
+	get /articles/:article_id/comments (CommentListReq) returns (CommentListResp)
+
+	@handler deleteComment
+	delete /comments/:id (DeleteCommentReq)
+}
+
